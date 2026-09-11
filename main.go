@@ -11,7 +11,7 @@ import (
 
 var serverFlag = flag.Bool("server", false, "run the web server")
 
-const appVersion = "v6"
+const appVersion = "v7"
 
 const homePage = `<!DOCTYPE html>
 <html lang="en">
@@ -365,7 +365,7 @@ const calculatorPage = `<!DOCTYPE html>
 		.results-card h2 { margin: 0 0 18px; }
 		.results-grid {
 			display: grid;
-			grid-template-columns: repeat(3, minmax(0, 1fr));
+			grid-template-columns: repeat(4, minmax(0, 1fr));
 			gap: 16px;
 		}
 		.result-item {
@@ -535,6 +535,11 @@ const calculatorPage = `<!DOCTYPE html>
 
 				<div class="results-grid">
 					<div class="result-item">
+						<div class="result-label">Foam Solution per Minute</div>
+						<div class="result-value"><span id="foamSolutionPerMinute">0</span> GPM</div>
+					</div>
+
+					<div class="result-item">
 						<div class="result-label">Total Foam Solution</div>
 						<div class="result-value"><span id="totalFoamSolution">0</span> gal</div>
 					</div>
@@ -639,10 +644,12 @@ const calculatorPage = `<!DOCTYPE html>
 					return;
 				}
 
-				const totalFoamSolution = area * rate * duration;
+				const foamSolutionPerMinute = area * rate;
+				const totalFoamSolution = foamSolutionPerMinute * duration;
 				const foamConcentrateNeeded = totalFoamSolution * concentrationFraction;
 				const waterNeeded = totalFoamSolution - foamConcentrateNeeded;
 
+				document.getElementById("foamSolutionPerMinute").textContent = formatGallons(foamSolutionPerMinute);
 				document.getElementById("totalFoamSolution").textContent = formatGallons(totalFoamSolution);
 				document.getElementById("foamConcentrate").textContent = formatGallons(foamConcentrateNeeded);
 				document.getElementById("waterNeeded").textContent = formatGallons(waterNeeded);
@@ -706,7 +713,7 @@ func main() {
 
 	if !*serverFlag {
 		fmt.Println("Usage:")
-		fmt.Println("  lets_foam_calculator.exe -server")
+		fmt.Println("  lets_foam_calculator -server")
 		return
 	}
 
